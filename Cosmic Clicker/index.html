@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Cosmic Clicker - Juego Espacial Incremental</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Meta tags para SEO y compartir -->
+    <meta name="description" content="¡Conquista el universo clickeando! Mejora tu nave, explora galaxias y conviértete en el maestro del cosmos.">
+    <meta name="keywords" content="juego, clicker, espacial, incremental, galaxia, universo">
+    <meta name="author" content="Tu Nombre">
+    
+    <!-- iOS específico -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Cosmic Clicker">
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <link rel="apple-touch-startup-image" href="icons/icon-512.png">
+    
+    <!-- Android/Chrome -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Cosmic Clicker">
+    <meta name="theme-color" content="#667eea">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-TileImage" href="icons/icon-192.png">
+    
+    <!-- Open Graph para redes sociales -->
+    <meta property="og:title" content="Cosmic Clicker - Juego Espacial">
+    <meta property="og:description" content="¡Conquista el universo clickeando!">
+    <meta property="og:image" content="icons/icon-512.png">
+    <meta property="og:type" content="website">
+    
+    <!-- Favicon tradicional -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-192.png">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title-glow">🌟 Cosmic Clicker</h1>
+            <div class="stats">
+                <div class="stat">Nivel: <span id="level">1</span></div>
+                <div class="stat">CPS: <span id="totalCps">0</span></div>
+                <div class="stat">💎 <span id="gems">0</span></div>
+                <div class="stat">🧬 <span id="dna">0</span></div>
+            </div>
+            <div class="points-display" id="points">0</div>
+            
+            <div class="bonus-effects" id="activeEffects">
+                <div>Efectos Activos:</div>
+            </div>
+        </div>
+
+        <div class="main-clicker">
+            <button class="click-button ripple" id="clickButton">
+                🌟<br><span id="clickPowerDisplay">+1</span>
+            </button>
+            <div class="progress-bar">
+                <div class="progress-fill" id="levelProgress"></div>
+            </div>
+            <small>Progreso al siguiente nivel</small>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('basic')">Básico</button>
+            <button class="tab" onclick="switchTab('advanced')">Avanzado</button>
+            <button class="tab" onclick="switchTab('research')">I+D</button>
+            <button class="tab" onclick="switchTab('prestige')">Prestigio</button>
+            <button class="tab" onclick="switchTab('shop')">Tienda</button>
+            <button class="tab" onclick="switchTab('achievements')">Logros</button>
+        </div>
+
+        <!-- Pestañas de contenido (se mantienen igual, solo estilos nuevos) -->
+        <div id="basic-tab" class="tab-content active">
+            <div class="upgrades">
+                <div class="upgrade-category">
+                    <div class="category-title">🖱️ Mejoras de Click</div>
+                    <div class="upgrade-item" id="clickPower">
+                        <div>
+                            <strong>Poder de Click</strong><br>
+                            <small>+<span id="clickBonus">1</span> por click | Nivel: <span id="clickLevel">1</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('clickPower')">
+                            <span id="clickCost">10</span> ⭐
+                        </button>
+                    </div>
+
+                    <div class="upgrade-item" id="criticalHit">
+                        <div>
+                            <strong>Golpe Crítico</strong><br>
+                            <small><span id="critChance">0</span>% probabilidad x5 | Nivel: <span id="critLevel">0</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('criticalHit')">
+                            <span id="critCost">100</span> ⭐
+                        </button>
+                    </div>
+
+                    <div class="upgrade-item" id="multiClick">
+                        <div>
+                            <strong>Multi-Click</strong><br>
+                            <small><span id="multiClicks">1</span> clicks por tap | Nivel: <span id="multiLevel">0</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('multiClick')">
+                            <span id="multiCost">500</span> ⭐
+                        </button>
+                    </div>
+                </div>
+
+                <div class="upgrade-category">
+                    <div class="category-title">🤖 Generadores Automáticos</div>
+                    <div class="upgrade-item" id="autoClicker">
+                        <div>
+                            <strong>Auto-Clicker</strong><br>
+                            <small><span id="autoProduction">1</span>/s | Cantidad: <span id="autoCount">0</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('autoClicker')">
+                            <span id="autoCost">50</span> ⭐
+                        </button>
+                    </div>
+
+                    <div class="upgrade-item" id="starMiner">
+                        <div>
+                            <strong>Minero Estelar</strong><br>
+                            <small><span id="minerProduction">5</span>/s | Cantidad: <span id="minerCount">0</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('starMiner')">
+                            <span id="minerCost">500</span> ⭐
+                        </button>
+                    </div>
+
+                    <div class="upgrade-item" id="galaxyFarm">
+                        <div>
+                            <strong>Granja Galáctica</strong><br>
+                            <small><span id="farmProduction">25</span>/s | Cantidad: <span id="farmCount">0</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('galaxyFarm')">
+                            <span id="farmCost">5000</span> ⭐
+                        </button>
+                    </div>
+
+                    <div class="upgrade-item" id="blackHole">
+                        <div>
+                            <strong>Agujero Negro</strong><br>
+                            <small><span id="blackHoleProduction">100</span>/s | Cantidad: <span id="blackHoleCount">0</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('blackHole')">
+                            <span id="blackHoleCost">50000</span> ⭐
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="advanced-tab" class="tab-content">
+            <div class="upgrades">
+                <div class="upgrade-category">
+                    <div class="category-title">⚡ Multiplicadores</div>
+                    <div class="upgrade-item" id="clickMultiplier">
+                        <div>
+                            <strong>Multiplicador de Click</strong><br>
+                            <small>x<span id="clickMultValue">1</span> poder click | Nivel: <span id="clickMultLevel">0</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('clickMultiplier')">
+                            <span id="clickMultCost">1000</span> ⭐
+                        </button>
+                    </div>
+
+                    <div class="upgrade-item" id="idleMultiplier">
+                        <div>
+                            <strong>Multiplicador Pasivo</strong><br>
+                            <small>x<span id="idleMultValue">1</span> CPS | Nivel: <span id="idleMultLevel">0</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('idleMultiplier')">
+                            <span id="idleMultCost">2000</span> ⭐
+                        </button>
+                    </div>
+
+                    <div class="upgrade-item" id="globalMultiplier">
+                        <div>
+                            <strong>Multiplicador Global</strong><br>
+                            <small>x<span id="globalMultValue">1</span> todo | Nivel: <span id="globalMultLevel">0</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('globalMultiplier')">
+                            <span id="globalMultCost">10000</span> ⭐
+                        </button>
+                    </div>
+                </div>
+
+                <div class="upgrade-category">
+                    <div class="category-title">🌟 Especializaciones</div>
+                    <div class="upgrade-item" id="efficiency">
+                        <div>
+                            <strong>Eficiencia</strong><br>
+                            <small>-<span id="efficiencyValue">0</span>% costos mejoras | Nivel: <span id="efficiencyLevel">0</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('efficiency')">
+                            <span id="efficiencyCost">5000</span> ⭐
+                        </button>
+                    </div>
+
+                    <div class="upgrade-item" id="luck">
+                        <div>
+                            <strong>Suerte Cósmica</strong><br>
+                            <small>+<span id="luckValue">0</span>% drops especiales | Nivel: <span id="luckLevel">0</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('luck')">
+                            <span id="luckCost">7500</span> ⭐
+                        </button>
+                    </div>
+
+                    <div class="upgrade-item" id="automation">
+                        <div>
+                            <strong>Automatización</strong><br>
+                            <small>Auto-compra activa | Nivel: <span id="automationLevel">0</span></small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyUpgrade('automation')">
+                            <span id="automationCost">25000</span> ⭐
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="research-tab" class="tab-content">
+            <div class="upgrades">
+                <div class="upgrade-category">
+                    <div class="category-title">🧬 Centro de Investigación</div>
+                    <p style="font-size: 12px; margin-bottom: 15px; opacity: 0.8;">
+                        Usa ADN para desbloquear mejoras permanentes y poderosas
+                    </p>
+
+                    <div class="research-item" id="quantumClick">
+                        <div>
+                            <strong>Click Cuántico</strong><br>
+                            <small>Cada click tiene 10% probabilidad de duplicar puntos</small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyResearch('quantumClick')">
+                            <span id="quantumCost">10</span> 🧬
+                        </button>
+                    </div>
+
+                    <div class="research-item" id="timeWarp">
+                        <div>
+                            <strong>Distorsión Temporal</strong><br>
+                            <small>+50% velocidad de todos los generadores</small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyResearch('timeWarp')">
+                            <span id="timeWarpCost">25</span> 🧬
+                        </button>
+                    </div>
+
+                    <div class="research-item" id="neuralNetwork">
+                        <div>
+                            <strong>Red Neural</strong><br>
+                            <small>Genera ADN pasivamente basado en tu CPS</small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyResearch('neuralNetwork')">
+                            <span id="neuralCost">50</span> 🧬
+                        </button>
+                    </div>
+
+                    <div class="research-item" id="cosmicResonance">
+                        <div>
+                            <strong>Resonancia Cósmica</strong><br>
+                            <small>Cada 100 niveles otorga +100% multiplicador global</small>
+                        </div>
+                        <button class="upgrade-button" onclick="buyResearch('cosmicResonance')">
+                            <span id="resonanceCost">100</span> 🧬
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="prestige-tab" class="tab-content">
+            <div class="prestige-section">
+                <h3>🚀 Sistema de Prestigio</h3>
+                <p style="font-size: 13px; margin: 10px 0;">
+                    Reinicia tu progreso pero gana <strong>ADN</strong> para mejoras permanentes
+                </p>
+                
+                <div class="milestone">
+                    <strong>ADN al Prestigiar: <span id="prestigeDNA">0</span> 🧬</strong><br>
+                    <small>Basado en tu nivel total: <span id="totalLevels">0</span></small>
+                </div>
+
+                <div class="milestone" id="nextMilestone">
+                    <strong>Siguiente Hito:</strong><br>
+                    <small>Nivel 50 → +5 ADN bonus</small>
+                </div>
+
+                <button class="prestige-button" id="prestigeBtn" onclick="prestige()">
+                    PRESTIGIO (Requiere Nivel 25)
+                </button>
+
+                <div style="margin-top: 15px; font-size: 12px;">
+                    <div><strong>Beneficios del ADN:</strong></div>
+                    <div>• Investigaciones permanentes</div>
+                    <div>• Multiplicadores únicos</div>
+                    <div>• Desbloquear contenido especial</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="shop-tab" class="tab-content">
+            <div class="shop">
+                <h3>💰 Tienda Premium</h3>
+                
+                <div class="shop-item">
+                    <h4>🎁 Paquete Inicial</h4>
+                    <p style="font-size: 12px;">10K puntos + 15 gemas + x3 multiplicador + 5 ADN</p>
+                    <button class="premium-button" onclick="buyPremium('starter')">
+                        Comprar - $0.99
+                    </button>
+                </div>
+
+                <div class="shop-item">
+                    <h4>💎 Pack Supremo</h4>
+                    <p style="font-size: 12px;">1M puntos + 200 gemas + x10 mult + 50 ADN + Auto-compras</p>
+                    <button class="premium-button" onclick="buyPremium('supreme')">
+                        Comprar - $9.99
+                    </button>
+                </div>
+
+                <div class="shop-item">
+                    <h4>🧬 Kit de Investigación</h4>
+                    <p style="font-size: 12px;">100 ADN + Todas las investigaciones + Bonificador permanente</p>
+                    <button class="premium-button" onclick="buyPremium('research')">
+                        Comprar - $7.99
+                    </button>
+                </div>
+
+                <div class="shop-item">
+                    <h4>⚡ Acelerador Temporal</h4>
+                    <p style="font-size: 12px;">x10 velocidad por 2 horas + x5 drops de gemas</p>
+                    <button class="premium-button" onclick="buyPremium('booster')">
+                        Comprar - $2.99
+                    </button>
+                </div>
+
+                <div class="shop-item">
+                    <h4>📱 Sin Anuncios Premium</h4>
+                    <p style="font-size: 12px;">Elimina todos los anuncios + Recompensas dobles</p>
+                    <button class="premium-button" onclick="buyPremium('noAds')">
+                        Comprar - $4.99
+                    </button>
+                </div>
+
+                <div class="shop-item">
+                    <h4>📺 Ver Anuncio Recompensado</h4>
+                    <p style="font-size: 12px;">Gana recompensas aleatorias viendo anuncios</p>
+                    <button class="ad-button" id="watchAd" onclick="watchAd()">
+                        Ver Anuncio (Disponible)
+                    </button>
+                    <small>Próximo en: <span id="adTimer">0</span>s</small>
+                </div>
+            </div>
+        </div>
+
+        <div id="achievements-tab" class="tab-content">
+            <div class="upgrades">
+                <h3>🏆 Logros</h3>
+                <div id="achievementsList">
+                    <!-- Los logros se generarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="achievement" id="achievementPopup">
+        ¡Logro Desbloqueado!
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
