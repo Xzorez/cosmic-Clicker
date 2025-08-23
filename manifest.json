@@ -1,7 +1,7 @@
 {
   "name": "Cosmic Clicker - Juego Espacial Incremental",
   "short_name": "Cosmic Clicker",
-  "description": "¡Conquista el universo clickeando! Mejora tu nave, explora galaxias y conviértete en el maestro del cosmos.",
+  "description": "Conquista el universo clickeando! Mejora tu nave, explora galaxias y conviertete en el maestro del cosmos.",
   "start_url": "./index.html",
   "display": "standalone",
   "display_override": ["fullscreen", "standalone", "minimal-ui"],
